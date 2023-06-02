@@ -1,0 +1,3 @@
+C:/Users/manue/CLionProjects/PFAPI23_Marenghi_Manuela/cmake-build-debug/CMakeFiles/PFAPI23_Marenghi_Manuela.dir
+C:/Users/manue/CLionProjects/PFAPI23_Marenghi_Manuela/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/manue/CLionProjects/PFAPI23_Marenghi_Manuela/cmake-build-debug/CMakeFiles/rebuild_cache.dir
