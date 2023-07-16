@@ -536,175 +536,62 @@ void aggiungi_auto(int station, int autonomy){
 }
 
 // functions station
-int percorso_ricorsivo(testa_percorso** thispercorso,node_t* node,int dist,int arrivo){
-    node_t* next_tappa=node;
-    int dist_max=node->max+node->station;
-    //controllo se è ultimo giro o meno
-    if(dist==2){
-        int find=0;
-        if(node->visited==1){
-            //so che questo nodo non mi porta a destinazione
-            //delete_last_insert(&thispercorso,1);
-            return find;
-        }
-        else{
-            next_tappa= rb_successore(next_tappa);
-            //controllo solo ultimo giro senza ricorsione
-            while(next_tappa->station<=dist_max && find==0){
-                int arrived=next_tappa->station+next_tappa->max;
-                if(arrived>arrivo){
-                    percorso *prova=(*thispercorso)->pointer_pos;
-                    if(prova==NULL){
-                        insert_tappa(next_tappa->station,&prova);
-                        (*thispercorso)->pointer_pos=prova;
-                        find=1;
-                    }
-                    else{
-                        if(next_tappa->station<prova->station){
-                            while(prova!=NULL){
-                                percorso* cancel=prova;
-                                prova=prova->prec;
-                                free(cancel);
-                            }
-                            prova=NULL;
-                            insert_tappa(next_tappa->station,&prova);
-                            (*thispercorso)->pointer_pos=prova;
-                            find=1;
-                        }
-                        else if(next_tappa->station==prova->station){
-                            insert_tappa(next_tappa->station,&temp);
-                            find=1;
-                        }
-                        else{
-                            find=0;
-                        }
-                    }
-                    //add_successor( next_tappa->station, &prova, 0);
-                }
-                next_tappa= rb_successore(next_tappa);
-            }
-            if(find==0){
-                node->visited=1;
-            }
-            return find;
-        }
+int percorsoricorsivoavanti(node_t* partenza,int arrivo,int dstmax){
+    node_t* node=partenza;
+    int tot;
+    while(partenza->station!=arrivo){
+        tot++;
+        partenza= rb_successore(partenza);
     }
-    else {
-        int find=0;
-        next_tappa= rb_successore(next_tappa);
-        while(next_tappa->station<arrivo && next_tappa->station<=dist_max){
-            int continuo=0;
-            //passo per i successori di node
-            //add_successor(next_tappa->station, &thispercorso,1);
-            if((*thispercorso)->pointer_pos!=NULL){
-                percorso* pos=(*thispercorso)->pointer_pos;
-                if(next_tappa->station>=pos->station){
-                    continuo=1;
+    int* station=(int*) malloc(tot * sizeof(int));
+    int* distanze=(int*) malloc(tot * sizeof(int));
+    int i=0,j=-2;
+    int find=0;
+    node_t* nodo = rb_successore(node);
+    int x=-1;
+    do{
+        while(i==0 || distanze[x]==j){
+            while(nodo->station<=dstmax){
+                if(nodo->visited!=1 && find==0){
+                    station[i]=nodo->station;
+                    distanze[i]=j+1;
+                    i++;
+                    nodo->visited=1;
                 }
-            }
-            if(continuo==0){
-                testa_percorso* tent=(*thispercorso);
-                if(percorso_ricorsivo(&tent,next_tappa,dist-1,arrivo)==1){
-                    if(temp!=NULL){
-                        percorso* pos=(*thispercorso)->pointer_pos;
-                        while(pos->prec!=NULL && pos->prec->station==next_tappa->station){
-                            pos=pos->prec;
-                        }
-                        if(pos->station<next_tappa->station){
-                            pos=temp;
-                            while(pos!=NULL){
-                                percorso* cancel=pos;
-                                pos=pos->prec;
-                                free(cancel);
-                            }
-                            temp=NULL;
-                        }
-                        else{
-                            percorso* cancel=(*thispercorso)->pointer_pos;
-                            while(cancel!=NULL){
-                                percorso* cancello=cancel;
-                                cancel=cancel->prec;
-                                free(cancello);
-                            }
-                            temp=NULL;
-                        }
-                    }
-                    else{
-                        insert_tappa(next_tappa->station,&((*thispercorso)->pointer_pos));
-                    }
+                if(nodo->station==arrivo){
+                    printf("%d ",nodo->station);
                     find=1;
                 }
-                else{
-                    find=0;
-                }
+                nodo= rb_successore(nodo);
             }
-            next_tappa= rb_successore(next_tappa);
+            x++;
+            node=rb_successore(node);
+            dstmax=node->max+node->station;
         }
-        if(find==0){
-            return 0;
+        j++;
+    }while(find==0);
+    i=i-1;
+    int z=distanze[i];
+    while(i>=0){
+        if(distanze[i]!=distanze[i+1] && distanze[i]!=z){
+            printf("%d ",station[i]);
         }
-        else return 1;
+        i--;
     }
+    printf("\n");
+    return find;
 }
+
+
 void pianifica_percorso(int part,int arrivo){
-    testa_percorso* final=NULL;
-    int dist=0;
     node_t* partenza= rb_search(part);
     node_t* dest= rb_search(arrivo);
     if(dest!= nil && partenza!= nil){
         node_t* node= partenza;
         if(part<arrivo){
-            int arrived=partenza->station+partenza->max;
-            if(arrived>arrivo){
-                printf("%d %d\n",part,arrivo);
-            }
-            else{
-                int actual_dist=1;
-                while(dist==0 && node!=dest){
-                    node= rb_successore(partenza);
-                    if(node->station<=arrived){
-                        while(node->station<=arrived && node!=dest){
-                            int find=0;
-                            if(actual_dist==1){
-                                int dist_max_caseone=node->max+node->station;
-                                if(dist_max_caseone>=arrivo){
-                                    find=1;
-                                    printf("%d %d %d\n",part,node->station,arrivo);
-                                    break;
-                                }
-                            }
-                            else{
-                                testa_percorso* thispercorso=(testa_percorso*)malloc(sizeof(testa_percorso));
-                                thispercorso->station=node->station;
-                                thispercorso->pointer_pos=NULL;
-                                thispercorso->percorso_succ=NULL;
-                                //cerco da node se c'é un percorso a distanza actual_dist e se c'è lo restituisco in last e lo aggiungo alla lista di puntatori
-                                find=percorso_ricorsivo(&(thispercorso),node,actual_dist,arrivo);
-                                if(find==1){
-
-                                    //aggiungere lista/e a matrice di risultati
-                                    insert_percorso(&final,thispercorso,part);
-                                }
-                                else{
-                                    free(thispercorso);
-                                }
-                            }
-                            if(dist==0 && find==1){
-                                dist=actual_dist;
-                            }
-                            node= rb_successore(node);
-                        }
-                        //incremento la distanza che sto visitando
-                        actual_dist++;
-                    }else{
-                        break;
-                    }}
-                if(dist==0){
-                    printf("nessun percorso\n");
-                }
-                else{
-                    stampa_percorso(&final,arrivo);
-                }
+            int dist=partenza->station+partenza->max;
+            if(!percorsoricorsivoavanti(partenza,arrivo,dist)){
+                printf("nessun percorso\n");
             }
             inordertreewalkavanti(partenza,dest);
         }
@@ -782,7 +669,7 @@ int main(int argc, char * argv[]) {
             }
         }
     }
-    stampa(root);
+
     return 0;
 }
 
