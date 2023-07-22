@@ -380,6 +380,7 @@ void rottama_auto(int station, int autonomy){
     if(node!= nil){
         rimozione(node,autonomy);
     }
+    else printf("non rottamata\n");
 }
 void aggiungi_auto(int station, int autonomy){
     node_t* node= rb_search(station);
@@ -522,7 +523,7 @@ int percorsoricorsivoindietro(node_t* partenza,int arrivo,int dstmax){
     }while(find==0 && node!=arrivo);
     if(find==1){
         i=i-1;
-        int finale[j],z=0;
+        int z=0,finale[j];
         while(i>=0){
             finale[z]=station[i];
             z++;
@@ -547,7 +548,6 @@ void pianifica_percorso(int part,int arrivo){
             if(!percorsoricorsivoavanti(partenza,arrivo,dist)){
                 printf("nessun percorso\n");
             }
-            // inordertreewalkavanti(partenza,dest);
         }
         else{
             if(part==arrivo){
@@ -562,7 +562,6 @@ void pianifica_percorso(int part,int arrivo){
                     if(!percorsoricorsivoindietro(partenza,arrivo,dist)){
                         printf("nessun percorso\n");
                     }
-                    //  inordertreewalkindietro(partenza,dest);
                 }
             }
         }
