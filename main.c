@@ -34,15 +34,16 @@ int insert_car(int car,car_station** head,int max){
         return car;
     }
     else{
-    newCar->x=car;
-    newCar->succ=*head;
-    newCar->prec=NULL;
-    (*head)->prec=newCar;
-    *head=newCar;
-    if(car>max)
-        return car;
-    else return max;
-}}
+        newCar->x=car;
+        newCar->succ=*head;
+        newCar->prec=NULL;
+        (*head)->prec=newCar;
+        *head=newCar;
+        if(car>max)
+            return car;
+        else return max;
+    }
+}
 void stampa_car(node_t* node){
     car_station* head=node->cars;
     while(head!=NULL){
@@ -51,39 +52,50 @@ void stampa_car(node_t* node){
     }
 }
 void rimozione(node_t* node,int autonomy){
-    int change_max;
+    printf("rottamo in %d auto %d\n",node->station,autonomy);
+    int change_max=0;
     int res=0;
     int dim=node->num_cars;
     car_station *car=node->cars;
-    if (dim != 0) {
-        if (autonomy == node->max) { change_max = 1; }
-        else change_max = 0;
-        while (car != NULL) {
-            if (car->x == autonomy) {
-                if(car->prec!=NULL)
-                    car->prec->succ = car->succ;
-                else node->cars=car->succ;
-                if(car->succ!=NULL)
-                    car->succ->prec = car->prec;
-                free(car);
-                node->num_cars--;
-                printf("rottamata\n");
-                res = 1;
-                if(change_max==0){
-                    break;
+    car_station *p=NULL;
+    if (dim != 0){
+        if (autonomy == node->max) {  change_max = 1; }
+        while (car != NULL && res!=2){
+            if (car->x == autonomy){
+                if(res == 0){
+                    p=car;
+                    if(car->prec!=NULL)
+                        car->prec->succ = car->succ;
+                    else node->cars=car->succ;
+                    if(car->succ!=NULL)
+                        car->succ->prec = car->prec;
+                    node->num_cars--;
+                    printf("rottamata\n");
+                    if(change_max==0){
+                        res=2;
+                    }
+                    else res = 1;
                 }
-                else car->x=0;
+                else{
+                    printf("ho ritrovato il max");
+                    node->max=autonomy;
+                    res=2;
+                }
             }
-            if (change_max == 1) {
-                if (car->prec == NULL || node->max < car->x)
+            if (change_max == 1 && res==1){
+                if (car->prec == NULL || node->max < car->x){
+                    printf("assegno primo val oppure sto cercando max\n");
                     node->max = car->x;
+                }
             }
             car = car->succ;
         }
         if (res == 0){
             printf("non rottamata\n");
         }
+        else free(p);
     }
+    else printf("non rottamata\n");
 }
 
 //red black functions
@@ -116,62 +128,62 @@ void right_rotate(node_t* node){
         root=y;
     }
     else if(node==node->parent->right){
-            node->parent->right=y;
-        }
+        node->parent->right=y;
+    }
     else {
-            node->parent->left=y;
-        }
+        node->parent->left=y;
+    }
     y->right=node;
     node->parent=y;
 }
 void rb_fixup(node_t* newNode){
     node_t* x=nil;
     node_t* y=nil;
-   if(newNode==root){
-       root->color=BLACK;
-   }
-   else{
-       x = newNode->parent;
-       if(x->color==RED){
-       if(x==x->parent->left){
-           y=x->parent->right;
-           if( y->color==RED){
-               x->parent->color=RED;
-               x->color=BLACK;
-               y->color=BLACK;
-               rb_fixup(x->parent);
-           }
-           else{
-               if(newNode==x->right){
-                   newNode=x;
-                   left_rotate(newNode);
-                   x=newNode->parent;
-               }
-               x->color=BLACK;
-               x->parent->color=RED;
-               right_rotate(x->parent);
-           }
-       }
-       else{
-           y=x->parent->left;
-           if( y->color==RED){
-               x->parent->color=RED;
-               x->color=BLACK;
-               y->color=BLACK;
-               rb_fixup(x->parent);
-           }
-           else{
-               if(newNode==x->left){
-                   newNode=x;
-                   right_rotate(newNode);
-                   x=newNode->parent;
-               }
-               x->color=BLACK;
-               x->parent->color=RED;
-               left_rotate(x->parent);
-           }
-       }
-   }}
+    if(newNode==root){
+        root->color=BLACK;
+    }
+    else{
+        x = newNode->parent;
+        if(x->color==RED){
+            if(x==x->parent->left){
+                y=x->parent->right;
+                if( y->color==RED){
+                    x->parent->color=RED;
+                    x->color=BLACK;
+                    y->color=BLACK;
+                    rb_fixup(x->parent);
+                }
+                else{
+                    if(newNode==x->right){
+                        newNode=x;
+                        left_rotate(newNode);
+                        x=newNode->parent;
+                    }
+                    x->color=BLACK;
+                    x->parent->color=RED;
+                    right_rotate(x->parent);
+                }
+            }
+            else{
+                y=x->parent->left;
+                if( y->color==RED){
+                    x->parent->color=RED;
+                    x->color=BLACK;
+                    y->color=BLACK;
+                    rb_fixup(x->parent);
+                }
+                else{
+                    if(newNode==x->left){
+                        newNode=x;
+                        right_rotate(newNode);
+                        x=newNode->parent;
+                    }
+                    x->color=BLACK;
+                    x->parent->color=RED;
+                    left_rotate(x->parent);
+                }
+            }
+        }}
 }
 node_t *createNode(int station,int cars[],int dim){
     node_t *newNode = (node_t *)malloc(sizeof(node_t));
@@ -181,14 +193,10 @@ node_t *createNode(int station,int cars[],int dim){
     newNode->left = nil;
     newNode->right = nil;
     newNode->num_cars=dim;
+    newNode->max=0;
     car_station* head=NULL;
-    if(dim!=0){
-        for(int i=0;i<dim;i++){
-            newNode->max= insert_car(cars[i],&head,newNode->max);
-        }
-    }
-    else{
-        newNode->max=0;
+    for(int i=0;i<dim;i++){
+        newNode->max= insert_car(cars[i],&head,newNode->max);
     }
     newNode->cars=head;
     return newNode;
@@ -201,38 +209,39 @@ node_t *createNode_noauto(int station){
     newNode->left = nil;
     newNode->right = nil;
     newNode->num_cars=0;
+    newNode->max=0;
     car_station* head=NULL;
     newNode->cars=head;
     return newNode;
 }
 void insert_station(node_t* newNode){
-  node_t* y=nil;
-  node_t* x=root;
-  while( x!=nil){
-      y=x;
-      if(newNode->station< y->station){
-          x=x->left;
-      }
-      else x=x->right;
-  }
-  newNode->parent=y;
-  if(y==nil){
-      root=newNode;
-  }
-  else {
-      if (newNode->station < y->station) {
-          newNode->parent->left = newNode;
-      } else { newNode->parent->right = newNode; }
-  }
-  rb_fixup(newNode);
+    node_t* y=nil;
+    node_t* x=root;
+    while( x!=nil){
+        y=x;
+        if(newNode->station< y->station){
+            x=x->left;
+        }
+        else x=x->right;
+    }
+    newNode->parent=y;
+    if(y==nil){
+        root=newNode;
+    }
+    else {
+        if (newNode->station < y->station) {
+            newNode->parent->left = newNode;
+        } else { newNode->parent->right = newNode; }
+    }
+    rb_fixup(newNode);
 }
 void stampa(node_t* x){
     if(x!=nil){
-      stampa(x->left);
-      int y=x->station+x->max;
-      printf("station %d max  %d",x->station,y);
-      printf("\n");
-      stampa(x->right);
+        stampa(x->left);
+        int y=x->station+x->max;
+        printf("station %d max  %d",x->station,y);
+        printf("\n");
+        stampa(x->right);
     }
 }
 node_t* rb_search(int station){
@@ -343,48 +352,32 @@ void delete_station(node_t* node){
     node_t* y;
     node_t* x;
     if(root!= nil){
-    if(node->left==nil || node->right==nil){
-        y=node;
-    }
-    else y= rb_successore(node);
-    if(y->left!= nil){
-        x=y->left;
-    }
-    else x=y->right;
-    x->parent=y->parent;
-    if(y->parent==nil){
-        root=x;
-    }
-    else if(y==y->parent->left){
-        y->parent->left=x;
-    }
-    else y->parent->right=x;
-    if(y!= node){
-        node->station=y->station;
-    }
-    if(y->color==BLACK){
-        rb_delete_fixup(x);
-    }
-    if(y != nil){
+        if(node->left==nil || node->right==nil){
+            y=node;
+        }
+        else y= rb_successore(node);
+        if(y->left!= nil){
+            x=y->left;
+        }
+        else x=y->right;
+        x->parent=y->parent;
+        if(y->parent==nil){
+            root=x;
+        }
+        else if(y==y->parent->left){
+            y->parent->left=x;
+        }
+        else y->parent->right=x;
+        if(y!= node){
+            node->station=y->station;
+        }
+        if(y->color==BLACK){
+            rb_delete_fixup(x);
+        }
+        if(y != nil){
             free(y);
-    }}
+        }}
 }
-/*
-void inordertreewalkavanti(node_t* part,node_t* arrivo){
-    part= rb_successore(part);
-    while(part->station<arrivo->station){
-        part->visited=0;
-        part= rb_successore(part);
-    }
-}
-void inordertreewalkindietro(node_t* part,node_t* arrivo){
-    part= rb_predecessore(part);
-    while(part->station>arrivo->station){
-        part->visited=0;
-        part= rb_predecessore(part);
-    }
-}
-*/
 
 // cars functions
 void rottama_auto(int station, int autonomy){
@@ -417,7 +410,7 @@ int percorsoricorsivoavanti(node_t* partenza,int arrivo,int dstmax){
     int autonomie[tot];
     int station[tot];
     int distanze[tot];
-    for(int y=0;y<=tot;y++){
+    for(int y=0;y<tot;y++){
         station[y]=-1;
         distanze[y]=0;
         autonomie[y]=0;
@@ -426,20 +419,22 @@ int percorsoricorsivoavanti(node_t* partenza,int arrivo,int dstmax){
     int find=0;
     int x=-1;
     do{
-        while((i==0 || distanze[x]==j) && node!=arrivo && nodo!=NULL){
+        while((i==0 || distanze[x]==j) && node!=arrivo){
             int count=0;
-            while(nodo!=NULL && nodo->station<=dstmax){
-                if(find==0){
-                    station[i]=nodo->station;
-                    autonomie[i]=nodo->station+nodo->max;
-                    distanze[i]=x;
-                    count++;
-                    i++;
-                }
+            while(nodo->station<=dstmax && find!=1){
+                station[i]=nodo->station;
+                autonomie[i]=nodo->station+nodo->max;
+                distanze[i]=x;
+                count++;
+                i++;
                 if(nodo->station==arrivo){
-                        find=1;
+                    find=1;
+                    if(j==-2){
+                        printf("%d %d\n",p,nodo->station);
+                        return 1;
+                    }
                 }
-                nodo= rb_successore(nodo);
+                else nodo= rb_successore(nodo);
             }
             if(j==-2 && i==0){
                 return 0;
@@ -447,17 +442,15 @@ int percorsoricorsivoavanti(node_t* partenza,int arrivo,int dstmax){
             if(count==0 && station[x+1]==-1){
                 return 0;
             }
-            if(nodo!=NULL){
-                x++;
-                node=station[x];
-                dstmax=autonomie[x];
-            }
+            x++;
+            node=station[x];
+            dstmax=autonomie[x];
         }
         j++;
     }while(find==0 && node!=arrivo);
     if(find==1){
         i=i-1;
-        int finale[j],z=0;
+        int finale[i],z=0;
         while(i>=0){
             finale[z]=station[i];
             z++;
@@ -484,7 +477,7 @@ int percorsoricorsivoindietro(node_t* partenza,int arrivo,int dstmax){
     int autonomie[tot];
     int station[tot];
     int distanze[tot];
-    for(int y=0;y<=tot;y++){
+    for(int y=0;y<tot;y++){
         station[y]=-1;
         distanze[y]=0;
         autonomie[y]=0;
@@ -493,9 +486,9 @@ int percorsoricorsivoindietro(node_t* partenza,int arrivo,int dstmax){
     int find=0;
     int x=-1;
     do{
-        while((i==0 || distanze[x]==j) && node!=arrivo && nodo!=NULL){
+        while((i==0 || distanze[x]==j) && node!=arrivo){
             int count=x+1;
-            while(station[count]!=-1 && station[count]>=dstmax){
+            while(station[count]!=-1 && count<tot && station[count]>=dstmax){
                 int indix=distanze[count];
                 if(station[indix]>node && distanze[indix]==distanze[x]){
                     distanze[count]=x;
@@ -503,40 +496,37 @@ int percorsoricorsivoindietro(node_t* partenza,int arrivo,int dstmax){
                 count++;
             }
             count=0;
-            while(nodo!=NULL && nodo->station>=dstmax){
-                if(find==0){
-                    station[i]=nodo->station;
-                    int d=nodo->station-nodo->max;
-                    if(d<=0){
-                        autonomie[i]=0;
-                    }
-                    else autonomie[i]=d;
-                    distanze[i]=x;
-                    count++;
-                    i++;
+            while(find!=1 && nodo->station>=dstmax){
+                station[i]=nodo->station;
+                int d=nodo->station-nodo->max;
+                if(d<=0){
+                    autonomie[i]=0;
                 }
+                else autonomie[i]=d;
+                distanze[i]=x;
+                count++;
+                i++;
                 if(nodo->station==arrivo){
+                    printf("trovstooo\n");
                     find=1;
                 }
-                nodo= rb_predecessore(nodo);
+                else nodo= rb_predecessore(nodo);
             }
-            if(nodo!=NULL){
-                if(j==-2 && i==0){
-                    return 0;
-                }
-                if(count==0 && station[x+1]==-1){
-                    return 0;
-                }
-                x++;
-                node=station[x];
-                dstmax=autonomie[x];
+            if(j==-2 && i==0){
+                return 0;
             }
+            x++;
+            if(count==0 && station[x]==-1){
+                return 0;
+            }
+            node=station[x];
+            dstmax=autonomie[x];
         }
         j++;
     }while(find==0 && node!=arrivo);
     if(find==1){
         i=i-1;
-        int z=0,finale[j];
+        int z=0,finale[i];
         while(i>=0){
             finale[z]=station[i];
             z++;
@@ -556,37 +546,42 @@ void pianifica_percorso(int part,int arrivo){
     node_t* partenza= rb_search(part);
     node_t* dest= rb_search(arrivo);
     if(dest!= nil && partenza!= nil){
-       if(part<arrivo){
-           int dist=partenza->station+partenza->max;
-           if(!percorsoricorsivoavanti(partenza,arrivo,dist)){
-               printf("nessun percorso\n");
-           }
-       }
-       else{
-           if(part==arrivo){
-               printf("%d \n",part);
-           }
-           else{
-               int dist=partenza->station-partenza->max;
-               if(dist<=0){
-                   printf("%d %d\n",part,arrivo);
-               }
-               else{
-                   if(!percorsoricorsivoindietro(partenza,arrivo,dist)){
-                       printf("nessun percorso\n");
-                   }
-               }
-           }
-       }
+        if(part<arrivo){
+            int dist=partenza->station+partenza->max;
+            if(dist>=arrivo){
+                printf("%d %d\n",part,arrivo);
+            }
+            else{
+                if(!percorsoricorsivoavanti(partenza,arrivo,dist)){
+                    printf("nessun percorso\n");
+                }
+            }
+        }
+        else{
+            if(part==arrivo){
+                printf("%d \n",part);
+            }
+            else{
+                int dist=partenza->station-partenza->max;
+                if(dist<=0){
+                    printf("%d %d\n",part,arrivo);
+                }
+                else{
+                    if(!percorsoricorsivoindietro(partenza,arrivo,dist)){
+                        printf("nessun percorso\n");
+                    }
+                }
+            }
+        }
     }
     else printf("nessun percorso\n");
 }
 void aggiungi_stazione(int station,int numcar,int autonomie[]){
     node_t* node= rb_search(station);
     if(node == nil){
-    node_t* n = createNode(station,autonomie,numcar);
-    insert_station(n);
-    printf("aggiunta\n");
+        node_t* n = createNode(station,autonomie,numcar);
+        insert_station(n);
+        printf("aggiunta\n");
     }
     else printf("non aggiunta\n");
 }

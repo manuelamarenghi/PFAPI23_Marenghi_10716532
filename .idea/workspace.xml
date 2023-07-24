@@ -20,7 +20,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="971bd771-0bf6-483d-8e8a-dde0519dac71" name="Changes" comment="provato un po di test">
+    <list default="true" id="971bd771-0bf6-483d-8e8a-dde0519dac71" name="Changes" comment="messo a posto aggiungi auto">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,6 +99,8 @@
       <workItem from="1689954890873" duration="197000" />
       <workItem from="1689955112003" duration="124000" />
       <workItem from="1690034659656" duration="65000" />
+      <workItem from="1690104094106" duration="38000" />
+      <workItem from="1690117103715" duration="140000" />
     </task>
     <task id="LOCAL-00001" summary="prova">
       <created>1685725869691</created>
@@ -142,7 +144,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690034695105</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="messo a posto aggiungi auto">
+      <created>1690104115889</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1690104115889</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,7 +175,8 @@
     <MESSAGE value="pianifica percorso in avanti" />
     <MESSAGE value="metto a posto cmakelists" />
     <MESSAGE value="provato un po di test" />
-    <option name="LAST_COMMIT_MESSAGE" value="provato un po di test" />
+    <MESSAGE value="messo a posto aggiungi auto" />
+    <option name="LAST_COMMIT_MESSAGE" value="messo a posto aggiungi auto" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
