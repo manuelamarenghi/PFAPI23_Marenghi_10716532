@@ -69,6 +69,9 @@ void rimozione(node_t* node,int autonomy){
                     if(car->succ!=NULL)
                         car->succ->prec = car->prec;
                     node->num_cars--;
+                    if(node->num_cars==0){
+                        node->max=0;
+                    }
                     printf("rottamata\n");
                     if(change_max==0){
                         res=2;
@@ -80,7 +83,7 @@ void rimozione(node_t* node,int autonomy){
                     res=2;
                 }
             }
-            if (change_max == 1 && res==1){
+            else if (change_max == 1 && res!=2){
                 if (car->prec == NULL || node->max < car->x){
                     node->max = car->x;
                 }
@@ -453,13 +456,15 @@ int percorsoricorsivoavanti(node_t* partenza,int arrivo,int dstmax){
             z++;
             i=distanze[i];
         }
-        printf("%d ",p);
+        printf("%d",p);
         z=z-1;
         while(z>=0){
-            printf("%d ",finale[z]);
+            if(z!=0){
+                printf(" %d",finale[z]);
+            }
+            else printf(" %d\n",finale[z]);
             z--;
         }
-        printf("\n");
     }
     return find;
 }
@@ -568,13 +573,15 @@ int percorsoricorsivoindietro(node_t* partenza,int arrivo,int dstmax){
             z++;
             i=distanze[i];
         }
-        printf("%d ",p);
+        printf("%d",p);
         z=z-1;
         while(z>=0){
-            printf("%d ",finale[z]);
+            if(z!=0){
+                printf(" %d",finale[z]);
+            }
+            else printf(" %d\n",finale[z]);
             z--;
         }
-        printf("\n");
     }
     return find;
 }
@@ -601,7 +608,7 @@ void pianifica_percorso(int part,int arrivo){
             else{
                 int dist=partenza->station-partenza->max;
                 if(dist<=0){
-                    printf("%d %d\n",part,arrivo);
+                    printf("%d %d \n",part,arrivo);
                 }
                 else{
                     if(!percorsoricorsivoindietro(partenza,arrivo,dist)){
